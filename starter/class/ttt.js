@@ -23,15 +23,33 @@ class TTT {
     Screen.render();
   }
 
-  static checkWin(grid) {
-    if (this.grid)
-    // Return 'X' if player X wins
-    // Return 'O' if player O wins
-    // Return 'T' if the game is a tie
-    // Return false if the game has not ended
 
+  static checkWin(grid) {
+    // check for horizontal wins
+    for (let row = 0; row < 3; row++) {
+      if (grid[row][0] !== ' ' && grid[row][0] === grid[row][1] && grid[row][1] === grid[row][2]) {
+        return grid[row][0];
+      }
+    }
+    // Vertical Check
+    for (let col = 0; col < 3; col++) {
+      if (grid[0][col] !== ' ' && grid[0][col] === grid[1][col] && grid[1][col] === grid[2][col]) {
+        return grid[0][col];
+      }
+    }
+    // Diangonal Check
+    if(grid[0][0] !== ' ' && grid[0][0] === grid[1][1] && grid[1][1] === grid[2][2] || grid[0][2] !== ' ' && grid[0][2] === grid[1][1] && grid[1][1] === grid[2][0]) {
+      return grid[1][1];
+    }
+
+    if(grid.every(row => row.every(cell => cell !== ' '))) {
+      return 'T';
+    }
+    
+    return false;
   }
 
+  
   static endGame(winner) {
     if (winner === 'O' || winner === 'X') {
       Screen.setMessage(`Player ${winner} wins!`);
