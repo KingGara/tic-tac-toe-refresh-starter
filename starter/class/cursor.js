@@ -21,36 +21,52 @@ class Cursor {
     Screen.setBackgroundColor(this.row, this.col, this.cursorColor);
   }
 
-  up() {
-    if (this.row === 0) {
-      return `Cannot move there`
-    } else {
-      this.row -= 1
+  up = () => {
+    // Move cursor up
+    this.resetBackgroundColor();
+
+    if (this.row !== 0) {
+      this.row--;
     }
+
+    this.setBackgroundColor();
+    Screen.render();
   }
 
-  down() {
-    if (this.row === this.numRows - 1) {
-      return 'Cannot move there'
-    } else {
-      this.row += 1
+  down = () => {
+    // Move cursor down
+    this.resetBackgroundColor();
+
+    if (this.row !== this.numRows - 1) {
+      this.row++;
     }
+
+    this.setBackgroundColor();
+    Screen.render();
   }
 
-  left() {
-    if (this.col === 0) {
-      return 'Cannot move there'
-    } else {
-      this.col-= 1
+  left = () => {
+    // Move cursor left
+    this.resetBackgroundColor();
+
+    if (this.col !== 0) {
+      this.col--;
     }
+
+    this.setBackgroundColor();
+    Screen.render();
   }
 
-  right() {
-    if (this.col === this.numCols - 1) {
-      return "Cannot move there"
-    } else {
-      this.col += 1
+  right = () => {
+    // Move cursor right
+    this.resetBackgroundColor();
+
+    if (this.col !== this.numCols - 1) {
+      this.col++;
     }
+
+    this.setBackgroundColor.call(this);
+    Screen.render();
   }
 
 }
