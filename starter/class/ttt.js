@@ -29,49 +29,23 @@ class TTT {
     Screen.render();
   }
 
+  // Iterates through grid to check for all possible wins
   static checkWin(grid) {
-
-    let total = 0;
-    // takes values.X & values.O to see if there has been a winner
-    const declareWinner = function (X, O) {
-      if (X === 3) {
-        return "X";
-      } else if (O === 3) {
-        return "O";
-      } else {
-        return false;
-      }
-    }
-
-    // takes array, index and checks to see if X || O has grid[array][index] (Keeps Score)
-    const countMoves = function (array, index, values = {
-      X: 0,
-      O: 0
-    }) {
-      if (grid[array][index] === "X") {
-        values.X++;
-      } else if (grid[array][index] === "O") {
-        values.O++;
-      }
-
-      return values
-    }
-    
     // Horiztonal Check
     for (let row = 0; row < 3; row++) {
       if(grid[row][0] !== ' ' && grid[row][0] === grid[row][1] && grid[row][1] === grid[row][2]) {
-        return grid[row][0];
+        return grid[row][0]; // Symbol in Cell
     }
   }
     // Vertical Check
     for (let col = 0; col < 3; col++) {
       if (grid[0][col] !== ' ' && grid[0][col] === grid[1][col] && grid[1][col] === grid[2][col]) {
-        return grid[0][col]
+        return grid[0][col] // Symbol in Cell
       }
     }
     // Diagonal Check 
     if(grid[0][0] !== ' ' && grid[0][0] === grid[1][1] && grid[1][1] == grid[2][2] || grid[0][2] !== ' ' && grid[0][2] === grid[1][1] && grid[1][1] === grid[2][0]) {
-      return grid[1][1]
+      return grid[1][1] // Symbol in Cell
     }
     // Tie Check
     if (grid.every(row => row.every(cell => cell !== ' '))) {
@@ -79,8 +53,7 @@ class TTT {
     }
     return false
   }
-
-  // Command that places a move at cursors current position
+  // Command that places move at cursors current position
   // 1.) Check if current position is empty
   // 2.) Set the char at current to given char
   // 3.) Update display Grid
@@ -95,31 +68,39 @@ class TTT {
       Screen.setGrid(this.cursor.row, this.cursor.col, this.playerTurn);
       // Updates Display grid
       Screen.render();
-    
+      // Runs static checkWin after placeMove. 
       if (TTT.checkWin(Screen.grid)) {
+        // Runs endGame with result of checkWin as winner
         TTT.endGame(TTT.checkWin(Screen.grid));
       } else {
+        // Computers turn to move
         this.placeCpuMove();
       }
     }
   }
 
-  // 1.) 
+  // Returns a valid cpuMove  
   cpuMove = () => {
     let move = ComputerPlayer.getSmartMove(Screen.grid, this.computerTurn);
     return move;
   }
-
+  // Places cpu move on Screen.grid current
   placeCpuMove = () => {
+    // Sets move to valid cell
     const move = this.cpuMove();
+    // Sets text color to given color
     Screen.setTextColor(move.row, move.col, 'white');
+    // Sets the char at cell to given char
     Screen.setGrid(move.row, move.col, this.computerTurn);
+    // Updates Screen.grid display
     Screen.render();
+    // Checks if there is a winner in Screen.grid
     if (TTT.checkWin(Screen.grid)) {
+      // Returns winner through endGame check
       TTT.endGame(TTT.checkWin(Screen.grid));
     }
   }
-  
+  // Method that either declares winner or declares a tie
   static endGame(winner) {
     if (winner === 'O' || winner === 'X') {
       Screen.setMessage(`Player ${winner} wins!`);
