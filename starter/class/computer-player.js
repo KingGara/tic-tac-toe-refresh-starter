@@ -99,12 +99,14 @@ class ComputerPlayer {
         }
         return false;
     }
-    
-    // Static method that pushes all empty cells into a valid moves array
-    static getValidMoves(grid) {
-        
+    // Returns best possible move
+    static getSmartMove(grid, symbol) {
+        ComputerPlayer.minimax(grid, symbol);
+        return ComputerPlayer.nextMove;
+    }
+    // Static method that pushes all empty cells into a validMoves array
+    static getValidMoves(grid) {        
         const moves = [];
-
         for (let i = 0; i < grid.length; i++) {
             const row = i;
             for (let j = 0; j < grid[i].length; j++) {
@@ -116,7 +118,7 @@ class ComputerPlayer {
         }
         return moves;
     }
-    // Static method that sets move array to variable & returns a random move
+    // Static method that sets validMoves array to variable & returns a random move
     static randomMove(grid) {
         const moves = ComputerPlayer.getValidMoves(grid);
         // Random number within the range
@@ -129,8 +131,7 @@ class ComputerPlayer {
         // Var set using ternary operator [condition ? expressionIfTrue : expressionIfFalse]
         let opponent = symbol === "X" ? "O" : "X";
         // Sets Winner to result of ComputerPlayer.checkWin(grid);
-        const winner = ComputerPlayer.checkWin(grid);
-        
+        const winner = ComputerPlayer.checkWin(grid);        
         // Conditional Check if there is no winner (No winner falsey)
         if (!winner) {
             // Make a deep copy of the grid to simulate each potential move
@@ -138,18 +139,15 @@ class ComputerPlayer {
             const score = [];
             for (let row = 0; row < grid.length; row++) {
                 newGrid.push(grid[row].slice());
-            }
-            
+            }            
             // Get empty cells from grid using getValidMoves
             const validMoves = ComputerPlayer.getValidMoves(grid);
-            
-            // Recursive Search and Evaluation
             // Iterate over each valid moves
             for (let i = 0; i < validMoves.length; i++) {
+                // Declare a constant, assigns it the value of current validMoves[i]
                 const move = validMoves[i];
                 // Updating new grid with Symbol
                 newGrid[move.row][move.col] = symbol;
-
                 if (symbol === ComputerPlayer.symbol) {
                     depth++;
                     score.push(ComputerPlayer.minimax(newGrid, opponent, depth));
@@ -159,7 +157,6 @@ class ComputerPlayer {
                 }
                 newGrid[move.row][move.col] = " ";
             }
-
             // Move Selection
             if (symbol === ComputerPlayer.symbol) {
                 const min = ComputerPlayer.findMinIndex(score);
@@ -206,11 +203,6 @@ class ComputerPlayer {
             }
         }
         return index;
-    }
-
-    static getSmartMove(grid, symbol) {
-        ComputerPlayer.minimax(grid, symbol);
-        return ComputerPlayer.nextMove;
     }
 
     // static getWinningMoves(grid, symbol) {
