@@ -99,11 +99,14 @@ class ComputerPlayer {
         }
         return false;
     }
-    // Static method that pushes all empty cells into a valid moves array
-    static getValidMoves(grid) {
-        
+    // Returns best possible move
+    static getSmartMove(grid, symbol) {
+        ComputerPlayer.minimax(grid, symbol);
+        return ComputerPlayer.nextMove;
+    }
+    // Static method that pushes all empty cells into a validMoves array
+    static getValidMoves(grid) {        
         const moves = [];
-
         for (let i = 0; i < grid.length; i++) {
             const row = i;
             for (let j = 0; j < grid[i].length; j++) {
@@ -115,7 +118,7 @@ class ComputerPlayer {
         }
         return moves;
     }
-    // Static method that sets move array to variable & returns a random move
+    // Static method that sets validMoves array to variable & returns a random move
     static randomMove(grid) {
         const moves = ComputerPlayer.getValidMoves(grid);
         // Random number within the range
@@ -123,115 +126,27 @@ class ComputerPlayer {
 
         return moves[randomNum];
     }
-
-    static getWinningMoves(grid, symbol) {
-
-        const countSymbol = function(symbol, count, i, j) {
-            if (grid[i][j] === symbol) {
-                count++;
-            }
-            return count
-        }
-
-        let remaining = {};
-
-        const findRemainig = function(i, j) {
-            if (grid[i][j] === " ") {
-                remaining.row = i;
-                remaining.col = j;
-            }
-        }
-        // Sets valid com moves to validMoves
-        const validMoves = ComputerPlayer.getValidMoves(grid);
-
-        // Horizontal Check
-        for (let i = 0; i < grid.length; i++) {
-            let count = 0;
-            for (let j = 0; j < grid[i].length; j++) {
-                count = countSymbol(symbol, count, i, j);
-            }
-
-            if (count === 2) {
-                const move = validMoves.reduce((accum, element) => {
-                    if (element.row === i) {
-                        return element;
-                    }
-                    return accum;
-                }, null);
-                
-                if (move) return move;
-            }
-        }
-
-        // Vertical Check
-        for (let j = 0; j < grid[0].length; j++) {
-            let count = 0;
-
-            for (let i = 0; i < grid.length; i++) {
-                count = countSymbol(symbol, count, i, j);
-            }
-
-            if (count === 2) {
-                const move = validMoves.reduce((accum, element) => {
-                    if (element.col === j) {
-                        return element;
-                    }
-                    return accum;
-                }, null);
-                
-                if (move) return move;
-            }
-        }
-
-        // Diagonal Check
-        let j = 0;
-        let count = 0;
-
-        for (let i = 0; i < grid.length; i++) {
-            count = countSymbol(symbol, count, i, j);
-            findRemainig(i, j);
-
-            j++;
-        }
-
-        if (count === 2) {
-            return remaining
-        }
-
-        j = grid[0].length - 1;
-        count = 0;
-
-        for (let i = 0; i < grid.length; i++) {
-            count = countSymbol(symbol, count, i, j);
-            findRemainig(i, j);
-
-            j--;
-        }
-        
-        if (count === 2) {
-            return remaining;
-        }
-    }
-
+    // 
     static minimax(grid, symbol, depth = 0) {
-
+        // Var set using ternary operator [condition ? expressionIfTrue : expressionIfFalse]
         let opponent = symbol === "X" ? "O" : "X";
-
-        const winner = ComputerPlayer.checkWin(grid);
-
+        // Sets Winner to result of ComputerPlayer.checkWin(grid);
+        const winner = ComputerPlayer.checkWin(grid);        
+        // Conditional Check if there is no winner (No winner falsey)
         if (!winner) {
-            // Make a deep copy of the grid
+            // Make a deep copy of the grid to simulate each potential move
             let newGrid = [];
-
+            const score = [];
             for (let row = 0; row < grid.length; row++) {
                 newGrid.push(grid[row].slice());
-            }
-
+            }            
+            // Get empty cells from grid using getValidMoves
             const validMoves = ComputerPlayer.getValidMoves(grid);
-            const score = [];
-
+            // Iterate over each valid moves
             for (let i = 0; i < validMoves.length; i++) {
+                // Declare a constant, assigns it the value of current validMoves[i]
                 const move = validMoves[i];
+                // Updating new grid with Symbol
                 newGrid[move.row][move.col] = symbol;
                 if (symbol === ComputerPlayer.symbol) {
                     depth++;
@@ -242,7 +157,7 @@ class ComputerPlayer {
                 }
                 newGrid[move.row][move.col] = " ";
             }
-
+            // Move Selection
             if (symbol === ComputerPlayer.symbol) {
                 const min = ComputerPlayer.findMinIndex(score);
                 ComputerPlayer.nextMove = validMoves[min];
@@ -290,10 +205,94 @@ class ComputerPlayer {
         return index;
     }
 
-    static getSmartMove(grid, symbol) {
-        ComputerPlayer.minimax(grid, symbol);
-        return ComputerPlayer.nextMove;
-    }
+    // static getWinningMoves(grid, symbol) {
+
+    //     const countSymbol = function(symbol, count, i, j) {
+    //         if (grid[i][j] === symbol) {
+    //             count++;
+    //         }
+    //         return count
+    //     }
+
+    //     let remaining = {};
+
+    //     const findRemainig = function(i, j) {
+    //         if (grid[i][j] === " ") {
+    //             remaining.row = i;
+    //             remaining.col = j;
+    //         }
+    //     }
+    //     // Sets valid com moves to validMoves
+    //     const validMoves = ComputerPlayer.getValidMoves(grid);
+
+    //     // Horizontal Check
+    //     for (let i = 0; i < grid.length; i++) {
+    //         let count = 0;
+    //         for (let j = 0; j < grid[i].length; j++) {
+    //             count = countSymbol(symbol, count, i, j);
+    //         }
+
+    //         if (count === 2) {
+    //             const move = validMoves.reduce((accum, element) => {
+    //                 if (element.row === i) {
+    //                     return element;
+    //                 }
+    //                 return accum;
+    //             }, null);
+                
+    //             if (move) return move;
+    //         }
+    //     }
+
+    //     // Vertical Check
+    //     for (let j = 0; j < grid[0].length; j++) {
+    //         let count = 0;
+
+    //         for (let i = 0; i < grid.length; i++) {
+    //             count = countSymbol(symbol, count, i, j);
+    //         }
+
+    //         if (count === 2) {
+    //             const move = validMoves.reduce((accum, element) => {
+    //                 if (element.col === j) {
+    //                     return element;
+    //                 }
+    //                 return accum;
+    //             }, null);
+                
+    //             if (move) return move;
+    //         }
+    //     }
+
+    //     // Diagonal Check
+    //     let j = 0;
+    //     let count = 0;
+
+    //     for (let i = 0; i < grid.length; i++) {
+    //         count = countSymbol(symbol, count, i, j);
+    //         findRemainig(i, j);
+
+    //         j++;
+    //     }
+
+    //     if (count === 2) {
+    //         return remaining
+    //     }
+
+    //     j = grid[0].length - 1;
+    //     count = 0;
+
+    //     for (let i = 0; i < grid.length; i++) {
+    //         count = countSymbol(symbol, count, i, j);
+    //         findRemainig(i, j);
+
+    //         j--;
+    //     }
+        
+    //     if (count === 2) {
+    //         return remaining;
+    //     }
+    // }
 }
 
 module.exports = ComputerPlayer;
